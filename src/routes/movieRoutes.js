@@ -1,26 +1,18 @@
-const express= require("express")
-const router= express.Router()
+const express = require("express");
+const router = express.Router();
 
-// just structuring the routes
+const {
+  createMovie,
+  getAllMovies,
+  getMovieById,
+  updateMovie,
+  deleteMovie,
+} = require("../controllers/moviecontroller");
 
-router.post("/",(req,res)=>{
-    res.send("Create movie");
-});
+router.post("/", createMovie);
+router.get("/", getAllMovies);
+router.get("/:id", getMovieById);
+router.put("/:id", updateMovie);
+router.delete("/:id", deleteMovie);
 
-router.get("/",(req,res)=>{
-    res.send("Get all movies");
-});
-
-router.get("/:id",(req,res)=>{
-    res.send("Get movies by id");
-});
-
-router.put("/:id",(req,res)=>{
-    res.send("Update movie based on id");
-});
-
-router.delete("/:id",(req,res)=>{
-    res.send("Delete movies")
-});
-
-module.exports= router;
+module.exports = router;

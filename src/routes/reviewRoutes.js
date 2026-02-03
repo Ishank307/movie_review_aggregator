@@ -1,16 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-router.post("/movies/:movieId/reviews", (req, res) => {
-  res.send("Add review to movie");
-});
+const {
+  addReview,
+  getReviewsByMovie,
+  deleteReview,
+} = require("../controllers/reviewController");
 
-router.get("/movies/:movieId/reviews", (req, res) => {
-  res.send("Get reviews for movie");
-});
-
-router.delete("/reviews/:reviewId", (req, res) => {
-  res.send("Delete review");
-});
+router.post("/movies/:movieId/reviews", addReview);
+router.get("/movies/:movieId/reviews", getReviewsByMovie);
+router.delete("/reviews/:reviewId", deleteReview);
 
 module.exports = router;
