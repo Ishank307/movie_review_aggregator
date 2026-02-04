@@ -1,6 +1,13 @@
 const jwt = require("jsonwebtoken");
 
+/**
+ * @desc Protect routes by validating JWT in Authorization header
+ */
 const protect = (req, res, next) => {
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ message: "JWT secret not configured" });
+  }
+
   let token;
 
   if (

@@ -1,10 +1,26 @@
 const Movie = require("../models/Movie");
 const mongoose = require("mongoose");
 
+/**
+ * @route POST /api/movies
+ * @access Private
+ * @desc Create a movie
+ */
 // CREATE movie
 const createMovie = async (req, res) => {
   try {
-    const movie = await Movie.create(req.body);
+    const { title, description, genre, releaseYear } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+
+    const movie = await Movie.create({
+      title,
+      description,
+      genre,
+      releaseYear,
+    });
     res.status(201).json(movie);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -12,6 +28,11 @@ const createMovie = async (req, res) => {
 };
 
 
+/**
+ * @route GET /api/movies
+ * @access Public
+ * @desc Get all movies with average rating and total reviews
+ */
 // used to get aggregate review of movies
 const getAllMovies = async (req, res) => {
   try {
@@ -50,6 +71,11 @@ const getAllMovies = async (req, res) => {
 };
 
 
+/**
+ * @route GET /api/movies/:id
+ * @access Public
+ * @desc Get movie by ID
+ */
 // GET movie by ID
 const getMovieById = async (req, res) => {
   try {
@@ -71,6 +97,11 @@ const getMovieById = async (req, res) => {
   }
 };
 
+/**
+ * @route PUT /api/movies/:id
+ * @access Private
+ * @desc Update movie by ID
+ */
 // UPDATE movie
 const updateMovie = async (req, res) => {
   try {
@@ -80,9 +111,20 @@ const updateMovie = async (req, res) => {
       return res.status(400).json({ message: "Invalid movie ID" });
     }
 
+    const { title, description, genre, releaseYear } = req.body;
+    const updates = {};
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (genre !== undefined) updates.genre = genre;
+    if (releaseYear !== undefined) updates.releaseYear = releaseYear;
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "Nothing to update" });
+    }
+
     const updatedMovie = await Movie.findByIdAndUpdate(
       id,
-      req.body,
+      updates,
       { new: true, runValidators: true }
     );
 
@@ -96,6 +138,11 @@ const updateMovie = async (req, res) => {
   }
 };
 
+/**
+ * @route DELETE /api/movies/:id
+ * @access Private
+ * @desc Delete movie by ID
+ */
 // DELETE movie
 const deleteMovie = async (req, res) => {
   try {

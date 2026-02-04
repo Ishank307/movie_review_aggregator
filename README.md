@@ -59,6 +59,11 @@ npm start
 ```
 Server runs on `http://localhost:3000`
 
+### 3a) Development mode
+```bash
+npm run dev
+```
+
 ### 4) Health check
 ```
 GET /health
@@ -201,6 +206,11 @@ Common error responses:
 { "message": "Movie not found" }
 { "message": "Not authorized, token missing" }
 ```
+
+## Validation Notes
+- `title` is required for creating movies.
+- `rating` must be a number between `1` and `5`.
+- `email` and `password` are required for login.
 
 ## Notes
 - JWT token must be included in `Authorization` header as: `Bearer <token>`

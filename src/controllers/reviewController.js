@@ -1,14 +1,19 @@
 const Review = require("../models/Review");
 const Movie = require("../models/Movie");
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
+/**
+ * @route POST /api/movies/:movieId/reviews
+ * @access Private
+ * @desc Add a review to a movie
+ */
 //adding review to a given movie
 const addReview = async (req, res) => {
     try {
         const { movieId } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(movieId)) {
-            return res.status(400).json({ message: "invalid movie ID" });
+            return res.status(400).json({ message: "Invalid movie ID" });
         }
 
         const movieExists = await Movie.findById(movieId);
@@ -16,12 +21,23 @@ const addReview = async (req, res) => {
             return res.status(404).json({ message: "Movie not found" });
         }
 
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
+        const { rating, comment } = req.body;
+        const parsedRating = Number(rating);
+        if (!Number.isFinite(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+            return res
+                .status(400)
+                .json({ message: "Rating must be a number between 1 and 5" });
+        }
 
         const review = await Review.create({
             movie: movieId,
             user: req.user.id, 
-            rating: req.body.rating,
-            comment: req.body.comment,
+            rating: parsedRating,
+            comment,
         });
 
         res.status(201).json(review);
@@ -30,6 +46,11 @@ const addReview = async (req, res) => {
     }
 }
 
+/**
+ * @route GET /api/movies/:movieId/reviews
+ * @access Public
+ * @desc Get reviews for a movie
+ */
 //GET reviews for a movie
 const getReviewsByMovie = async (req, res) => {
   try {
@@ -47,6 +68,11 @@ const getReviewsByMovie = async (req, res) => {
   }
 };
 
+/**
+ * @route DELETE /api/reviews/:reviewId
+ * @access Private
+ * @desc Delete a review
+ */
 //delete a review
 const deleteReview = async (req, res) => {
   try {
@@ -68,6 +94,11 @@ const deleteReview = async (req, res) => {
   }
 };
 
+/**
+ * @route PUT /api/reviews/:reviewId
+ * @access Private
+ * @desc Update a review
+ */
 // UPDATE review
 const updateReview = async (req, res) => {
   try {
@@ -78,7 +109,15 @@ const updateReview = async (req, res) => {
     }
 
     const updates = {};
-    if (req.body.rating !== undefined) updates.rating = req.body.rating;
+    if (req.body.rating !== undefined) {
+      const parsedRating = Number(req.body.rating);
+      if (!Number.isFinite(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+        return res
+          .status(400)
+          .json({ message: "Rating must be a number between 1 and 5" });
+      }
+      updates.rating = parsedRating;
+    }
     if (req.body.comment !== undefined) updates.comment = req.body.comment;
 
     if (Object.keys(updates).length === 0) {
