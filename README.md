@@ -219,6 +219,3 @@ Common error responses:
 - JWT token must be included in `Authorization` header as: `Bearer <token>`
 - Mongoose validation runs on create/update
 - Only the review owner can update or delete their review
-
-## License
-MIT
