@@ -1,6 +1,6 @@
 # Movie Review Aggregator API
 
-A RESTful backend for a Movie Review Aggregator built with **Node.js**, **Express**, and **MongoDB**. It supports movie & review CRUD, JWT authentication, and an aggregation endpoint that returns average ratings per movie.
+A RESTful backend for a Movie Review Aggregator built with **Node.js**, **Express**, and **MongoDB**. It keeps things simple while covering movie & review CRUD, JWT authentication, and an aggregation endpoint that returns average ratings per movie.
 
 ## Features
 - Movie CRUD
@@ -8,6 +8,7 @@ A RESTful backend for a Movie Review Aggregator built with **Node.js**, **Expres
 - JWT-based authentication
 - Aggregation for average rating and review count
 - Basic validation and error handling
+- One review per user per movie
 
 ## Tech Stack
 - Node.js
@@ -205,16 +206,19 @@ Common error responses:
 { "message": "Invalid movie ID" }
 { "message": "Movie not found" }
 { "message": "Not authorized, token missing" }
+{ "message": "You already reviewed this movie" }
 ```
 
 ## Validation Notes
 - `title` is required for creating movies.
 - `rating` must be a number between `1` and `5`.
 - `email` and `password` are required for login.
+- A user can submit only one review per movie.
 
 ## Notes
 - JWT token must be included in `Authorization` header as: `Bearer <token>`
 - Mongoose validation runs on create/update
+- Only the review owner can update or delete their review
 
 ## License
 MIT
