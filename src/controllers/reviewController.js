@@ -33,6 +33,16 @@ const addReview = async (req, res) => {
                 .json({ message: "Rating must be a number between 1 and 5" });
         }
 
+        // const existingReview = await Review.findOne({
+        //     movie: movieId,
+        //     user: req.user.id,
+        // });
+        // if (existingReview) {
+        //     return res
+        //         .status(400)
+        //         .json({ message: "You already reviewed this movie" });
+        // }
+
         const review = await Review.create({
             movie: movieId,
             user: req.user.id, 
@@ -41,7 +51,12 @@ const addReview = async (req, res) => {
         });
 
         res.status(201).json(review);
-    }catch(error){
+    } catch (error) {
+        if (error && error.code === 11000) {
+            return res
+                .status(400)
+                .json({ message: "You already reviewed this movie" });
+        }
         res.status(400).json({message:error.message});
     }
 }
