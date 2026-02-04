@@ -97,7 +97,10 @@ const deleteReview = async (req, res) => {
       return res.status(400).json({ message: "Invalid review ID" });
     }
 
-    const review = await Review.findByIdAndDelete(reviewId);
+    const review = await Review.findOneAndDelete({
+      _id: reviewId,
+      user: req.user.id,
+    });
 
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
@@ -139,8 +142,8 @@ const updateReview = async (req, res) => {
       return res.status(400).json({ message: "Nothing to update" });
     }
 
-    const updatedReview = await Review.findByIdAndUpdate(
-      reviewId,
+    const updatedReview = await Review.findOneAndUpdate(
+      { _id: reviewId, user: req.user.id },
       updates,
       { new: true, runValidators: true }
     );
